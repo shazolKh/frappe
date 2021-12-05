@@ -64,6 +64,19 @@ frappe.Application = class Application {
 			}
 		});
 
+		frappe.ui.add_system_theme_switch_listener();
+		const root = document.documentElement;
+
+		const observer = new MutationObserver(() => {
+			frappe.ui.set_theme();
+		});
+		observer.observe(root, {
+			attributes: true,
+			attributeFilter: ['data-theme-mode']
+		});
+
+		frappe.ui.set_theme();
+
 		// page container
 		this.make_page_container();
 		this.set_route();
@@ -518,6 +531,8 @@ frappe.Application = class Application {
 	}
 
 	show_update_available() {
+		if (frappe.boot.sysdefaults.disable_system_update_notification) return;
+
 		frappe.call({
 			"method": "frappe.utils.change_log.show_update_popup"
 		});
